@@ -29,7 +29,7 @@ public class TerrainGenerator : MonoBehaviour
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
 
-        StartCoroutine(CreateShape());
+        DoTerrainGeneration();
     }
 
     private void Update()
@@ -39,11 +39,17 @@ public class TerrainGenerator : MonoBehaviour
 
     public void EditorUpdate()
     {
-        StopAllCoroutines();
-        StartCoroutine(CreateShape());
+        DoTerrainGeneration();
     }
 
-    private IEnumerator CreateShape()
+    private void DoTerrainGeneration()
+    {
+        CreateVertices();
+        CreateTriangles();
+
+    }
+
+    private void CreateVertices()
     {
         vertices = new Vector3[(xSize + 1) * (zSize + 1)];
 
@@ -55,7 +61,10 @@ public class TerrainGenerator : MonoBehaviour
                 vertices[i] = new Vector3(x, y, z);
             }
         }
-         
+    }
+
+    public void CreateTriangles()
+    {
         triangles = new int[xSize * zSize * 6];
         int vertex = 0, triangle = 0;
         for (int z = 0; z < zSize; z++, vertex++)
@@ -69,8 +78,6 @@ public class TerrainGenerator : MonoBehaviour
                 triangles[triangle + 3] = vertex + 1;
                 triangles[triangle + 4] = vertex + xSize + 1;
                 triangles[triangle + 5] = vertex + xSize + 2;
-
-                yield return new WaitForSeconds(generationDelaySeconds);
             }
         }
     }
