@@ -28,10 +28,16 @@ public class TerrainGeneratorInspector : Editor
 
     public override void OnInspectorGUI()
     {
+        //update
         EditorGUI.BeginChangeCheck();
         DrawDefaultInspector();
         if (EditorGUI.EndChangeCheck())
         {
+            RefreshCreator();
+        }
+
+        if (GUILayout.Button("Randomize Offsets")) {
+            generator.RandomizeOffsets();
             RefreshCreator();
         }
     }

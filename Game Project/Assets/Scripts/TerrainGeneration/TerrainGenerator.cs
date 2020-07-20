@@ -14,14 +14,22 @@ public class TerrainGenerator : MonoBehaviour
     public int xSize = 20;
     public int zSize = 20;
 
-    [SerializeField]
-    private float generationDelaySeconds = .1f;
-    [SerializeField]
-    private float noiseScale = .3f;
-    [SerializeField]
-    private float xOffset;
-    [SerializeField]
-    private float zOffset;
+    public float spaceBetweenVertices = 1f;
+
+    public float yMultiplier = 1f;
+
+    public float posScale = .3f;
+
+    public float xOffset = 0f;
+    public float zOffset = 0f;
+
+    public float waitSeconds = 0.25f;
+
+
+    public bool scroll = false;
+    private bool scrollRunning = false;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,18 +43,29 @@ public class TerrainGenerator : MonoBehaviour
     private void Update()
     {
         UpdateMesh();
+        if (shouldScroll && scrollRunning == false)
+        {
+            StartCoroutine(Scroll());
+        }
     }
 
-    public void EditorUpdate()
+    private IEnumerator Scroll()
     {
+        scrollRunning = true;
         DoTerrainGeneration();
+        xOffset+= .1f;
+
+        yield return new WaitForSeconds(waitSeconds);
+
+        scrollRunning = false;
+        yield return null;
     }
+
 
     private void DoTerrainGeneration()
     {
         CreateVertices();
         CreateTriangles();
-
     }
 
     private void CreateVertices()
@@ -57,8 +76,8 @@ public class TerrainGenerator : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                float y = Mathf.PerlinNoise(x * noiseScale + xOffset, z * noiseScale + zOffset) * 2f;
-                vertices[i] = new Vector3(x, y, z);
+                float y = Mathf.PerlinNoise(x * posScale + xOffset, z * posScale + zOffset) * yMultiplier;
+                vertices[i] = new Vector3(x * spaceBetweenVertices, y, z * spaceBetweenVertices);
             }
         }
     }
@@ -92,11 +111,34 @@ public class TerrainGenerator : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    private void OnDrawGizmos()
+
+    private void DrawVertices()
     {
         for (int i = 0; i < vertices.Length; i++)
         {
             Gizmos.DrawSphere(vertices[i], .1f);
         }
     }
+    private void OnDrawGizmos()
+    {
+        if (vertices != null && vertices.Length > 0)
+        {
+            DrawVertices();
+        }
+    }
+
+    //----- INSPECTOR -----//
+    public void EditorUpdate()
+    {
+        DoTerrainGeneration();
+        UpdateMesh();
+    }
+
+    public void RandomizeOffsets()
+    {
+        float range = 100000;
+        xOffset = Random.Range(-range, range);
+        zOffset = Random.Range(-range, range);
+    }
+
 }
