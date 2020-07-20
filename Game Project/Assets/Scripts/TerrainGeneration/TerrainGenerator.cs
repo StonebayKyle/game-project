@@ -43,7 +43,7 @@ public class TerrainGenerator : MonoBehaviour
     private void Update()
     {
         UpdateMesh();
-        if (shouldScroll && scrollRunning == false)
+        if (scroll && scrollRunning == false)
         {
             StartCoroutine(Scroll());
         }
