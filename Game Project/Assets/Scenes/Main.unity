@@ -152,13 +152,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a0e219db8d0c4a4584b4dbf91172e1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xSize: 50
-  zSize: 50
-  multiplier: 3
+  xSize: 0
+  zSize: 0
+  xVerticesCount: 20
+  zVerticesCount: 20
+  spaceBetweenVertices: 1
+  scroll: 0
+  scrollWaitSeconds: 0.25
+  xMove: 1
+  zMove: 0
+  yMultiplier: 1
   posScale: 0.03
   xOffset: 0
   zOffset: 0
-  waitSeconds: 0.25
 --- !u!33 &64203203
 MeshFilter:
   m_ObjectHideFlags: 0

@@ -11,25 +11,37 @@ public class TerrainGenerator : MonoBehaviour
     private Vector3[] vertices;
     private int[] triangles;
 
-    public int xSize = 20;
-    public int zSize = 20;
+    [Header("Terrain")]
+    [ReadOnly]
+    [SerializeField]
+    private float xSize;
+    [ReadOnly]
+    [SerializeField]
+    private float zSize;
+
+    public int xVerticesCount = 20;
+    public int zVerticesCount = 20;
 
     public float spaceBetweenVertices = 1f;
 
+
+    [Header("Scrolling")]
+    public bool scroll = false;
+    [SerializeField]
+    private float scrollWaitSeconds = 0.25f;
+    [SerializeField]
+    private float xMove = .1f;
+    [SerializeField]
+    private float zMove = 0f;
+    private bool scrollRunning = false;
+
+    [Header("Noise")]
     public float yMultiplier = 1f;
 
     public float posScale = .3f;
 
     public float xOffset = 0f;
     public float zOffset = 0f;
-
-    public float waitSeconds = 0.25f;
-
-
-    public bool scroll = false;
-    private bool scrollRunning = false;
-
-
 
     // Start is called before the first frame update
     void Start()
@@ -52,10 +64,13 @@ public class TerrainGenerator : MonoBehaviour
     private IEnumerator Scroll()
     {
         scrollRunning = true;
-        DoTerrainGeneration();
-        xOffset+= .1f;
 
-        yield return new WaitForSeconds(waitSeconds);
+        xOffset += xMove;
+        zOffset += zMove;
+
+        DoTerrainGeneration();
+
+        yield return new WaitForSeconds(scrollWaitSeconds);
 
         scrollRunning = false;
         yield return null;
@@ -70,11 +85,11 @@ public class TerrainGenerator : MonoBehaviour
 
     private void CreateVertices()
     {
-        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
+        vertices = new Vector3[(xVerticesCount + 1) * (zVerticesCount + 1)];
 
-        for (int i = 0, z = 0; z <= zSize; z++)
+        for (int i = 0, z = 0; z <= zVerticesCount; z++)
         {
-            for (int x = 0; x <= xSize; x++, i++)
+            for (int x = 0; x <= xVerticesCount; x++, i++)
             {
                 float y = Mathf.PerlinNoise(x * posScale + xOffset, z * posScale + zOffset) * yMultiplier;
                 vertices[i] = new Vector3(x * spaceBetweenVertices, y, z * spaceBetweenVertices);
@@ -84,19 +99,19 @@ public class TerrainGenerator : MonoBehaviour
 
     public void CreateTriangles()
     {
-        triangles = new int[xSize * zSize * 6];
+        triangles = new int[xVerticesCount * zVerticesCount * 6];
         int vertex = 0, triangle = 0;
-        for (int z = 0; z < zSize; z++, vertex++)
+        for (int z = 0; z < zVerticesCount; z++, vertex++)
         {
             // make two sets of mesh triangles each iteration
-            for (int x = 0; x < xSize; x++, vertex++, triangle += 6)
+            for (int x = 0; x < xVerticesCount; x++, vertex++, triangle += 6)
             {
                 triangles[triangle] = vertex;
-                triangles[triangle + 1] = vertex + xSize + 1;
+                triangles[triangle + 1] = vertex + xVerticesCount + 1;
                 triangles[triangle + 2] = vertex + 1;
                 triangles[triangle + 3] = vertex + 1;
-                triangles[triangle + 4] = vertex + xSize + 1;
-                triangles[triangle + 5] = vertex + xSize + 2;
+                triangles[triangle + 4] = vertex + xVerticesCount + 1;
+                triangles[triangle + 5] = vertex + xVerticesCount + 2;
             }
         }
     }
@@ -132,11 +147,18 @@ public class TerrainGenerator : MonoBehaviour
     {
         DoTerrainGeneration();
         UpdateMesh();
+
+    }
+
+    public void UpdateReadOnlyValues()
+    {
+        xSize = xVerticesCount * spaceBetweenVertices;
+        zSize = zVerticesCount * spaceBetweenVertices;
     }
 
     public void RandomizeOffsets()
     {
-        float range = 100000;
+        float range = 1000000;
         xOffset = Random.Range(-range, range);
         zOffset = Random.Range(-range, range);
     }
