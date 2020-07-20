@@ -24,7 +24,6 @@ public class TerrainGenerator : MonoBehaviour
 
     public float spaceBetweenVertices = 1f;
 
-
     [Header("Scrolling")]
     public bool scroll = false;
     [SerializeField]
@@ -75,7 +74,6 @@ public class TerrainGenerator : MonoBehaviour
         scrollRunning = false;
         yield return null;
     }
-
 
     private void DoTerrainGeneration()
     {
@@ -131,18 +129,22 @@ public class TerrainGenerator : MonoBehaviour
     }
 
 
-    private void DrawVertices()
-    {
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            Gizmos.DrawSphere(vertices[i], .1f);
-        }
-    }
+
+
+
+
     private void OnDrawGizmos()
     {
         if (vertices != null && vertices.Length > 0)
         {
             DrawVertices();
+        }
+    }
+    private void DrawVertices()
+    {
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            Gizmos.DrawSphere(vertices[i], .1f);
         }
     }
 
