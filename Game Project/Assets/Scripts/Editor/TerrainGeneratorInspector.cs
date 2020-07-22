@@ -11,7 +11,6 @@ public class TerrainGeneratorInspector : Editor
     {
         generator = target as TerrainGenerator;
 
-        generator.UpdateReadOnlyValues();
         Undo.undoRedoPerformed += RefreshCreator;
     }
 
@@ -22,10 +21,9 @@ public class TerrainGeneratorInspector : Editor
 
     private void RefreshCreator()
     {
-        generator.UpdateReadOnlyValues();
         if (Application.isPlaying)
         {
-            generator.EditorUpdate();
+            generator.Refresh();
         }
     }
 
