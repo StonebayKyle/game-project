@@ -41,7 +41,7 @@ public class TerrainGenerator : MonoBehaviour
     private Color[] colors;
 
     private float currentStepSize;
-    private int currentRows, currentCols;
+    private int currentXSize, currentZSize;
 
     private void OnEnable()
     {
@@ -56,7 +56,7 @@ public class TerrainGenerator : MonoBehaviour
 
     public void Refresh()
     {
-        if (stepSize != currentStepSize || xSize != currentRows || zSize != currentCols)
+        if (stepSize != currentStepSize || xSize != currentXSize || zSize != currentZSize)
         {
             CreateGrid();
         }
@@ -77,10 +77,10 @@ public class TerrainGenerator : MonoBehaviour
         float inverseXSize = 1f / xSize;
         float inverseZSize = 1f / zSize;
 
-        for (int v = 0, y = 0; y <= zSize; y++)
+        for (int v = 0, z = 0; z <= zSize; z++)
         {
-            Vector3 point0 = Vector3.Lerp(point00, point01, y * inverseZSize);
-            Vector3 point1 = Vector3.Lerp(point10, point11, y * inverseZSize);
+            Vector3 point0 = Vector3.Lerp(point00, point01, z * inverseZSize);
+            Vector3 point1 = Vector3.Lerp(point10, point11, z * inverseZSize);
             for (int x = 0; x <= xSize; x++, v++)
             {
                 Vector3 point = Vector3.Lerp(point0, point1, x * inverseXSize);
@@ -107,8 +107,8 @@ public class TerrainGenerator : MonoBehaviour
     private void CreateGrid()
     {
         currentStepSize = stepSize;
-        currentRows = xSize;
-        currentCols = zSize;
+        currentXSize = xSize;
+        currentZSize = zSize;
 
         mesh.Clear();
 
