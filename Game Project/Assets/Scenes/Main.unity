@@ -153,7 +153,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a0e219db8d0c4a4584b4dbf91172e1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resolution: 10
+  stepSize: 0.1
+  xSize: 20
+  zSize: 20
   offset: {x: 1, y: 2, z: 3}
   rotation: {x: 45, y: 45, z: 0}
   strength: 1

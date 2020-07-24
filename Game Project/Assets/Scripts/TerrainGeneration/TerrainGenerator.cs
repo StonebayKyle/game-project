@@ -2,9 +2,10 @@
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class TerrainGenerator : MonoBehaviour
-{      
-    [Range(1, 200)]
-    public int resolution = 10;
+{
+    public float stepSize;
+
+    public int xSize, zSize;
 
     public Vector3 offset;
     public Vector3 rotation;
@@ -39,7 +40,8 @@ public class TerrainGenerator : MonoBehaviour
     private Vector3[] normals;
     private Color[] colors;
 
-    private int currentResolution;
+    private float currentStepSize;
+    private int currentRows, currentCols;
 
     private void OnEnable()
     {
@@ -54,28 +56,34 @@ public class TerrainGenerator : MonoBehaviour
 
     public void Refresh()
     {
-        if (resolution != currentResolution)
+        if (stepSize != currentStepSize || xSize != currentRows || zSize != currentCols)
         {
             CreateGrid();
         }
         Quaternion q = Quaternion.Euler(rotation);
-        Vector3 point00 = q * new Vector3(-0.5f, -0.5f) + offset;
-        Vector3 point10 = q * new Vector3(0.5f, -0.5f) + offset;
-        Vector3 point01 = q * new Vector3(-0.5f, 0.5f) + offset;
-        Vector3 point11 = q * new Vector3(0.5f, 0.5f) + offset;
+
+        float xLength = xSize * stepSize;
+        float zLength = zSize * stepSize;
+
+        Vector3 point00 = q * new Vector3(-xLength, -zLength) + offset; // left bottom
+        Vector3 point10 = q * new Vector3(xLength, -zLength) + offset; // right bottom
+        Vector3 point01 = q * new Vector3(-xLength, zLength) + offset; // left top
+        Vector3 point11 = q * new Vector3(xLength, zLength) + offset; // right top
 
         NoiseMethod method = Noise.methods[(int)type][dimensions - 1];
-        float stepSize = 1f / resolution;
 
         float amplitude = damping ? strength / frequency : strength;
 
-        for (int v = 0, y = 0; y <= resolution; y++)
+        float inverseXSize = 1f / xSize;
+        float inverseZSize = 1f / zSize;
+
+        for (int v = 0, y = 0; y <= zSize; y++)
         {
-            Vector3 point0 = Vector3.Lerp(point00, point01, y * stepSize);
-            Vector3 point1 = Vector3.Lerp(point10, point11, y * stepSize);
-            for (int x = 0; x <= resolution; x++, v++)
+            Vector3 point0 = Vector3.Lerp(point00, point01, y * inverseZSize);
+            Vector3 point1 = Vector3.Lerp(point10, point11, y * inverseZSize);
+            for (int x = 0; x <= xSize; x++, v++)
             {
-                Vector3 point = Vector3.Lerp(point0, point1, x * stepSize);
+                Vector3 point = Vector3.Lerp(point0, point1, x * inverseXSize);
                 float sample = Noise.Sum(method, point, frequency, octaves, lacunarity, persistence);
                 sample = type == NoiseMethodType.Value ? (sample - 0.5f) : (sample * 0.5f);
                 if (coloringForStrength)
@@ -98,16 +106,20 @@ public class TerrainGenerator : MonoBehaviour
 
     private void CreateGrid()
     {
-        currentResolution = resolution;
+        currentStepSize = stepSize;
+        currentRows = xSize;
+        currentCols = zSize;
+
         mesh.Clear();
-        vertices = new Vector3[(resolution + 1) * (resolution + 1)];
+
+        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
         colors = new Color[vertices.Length];
         normals = new Vector3[vertices.Length];
         Vector2[] uv = new Vector2[vertices.Length];
-        float stepSize = 1f / resolution;
-        for (int v = 0, z = 0; z <= resolution; z++)
+
+        for (int v = 0, z = 0; z <= zSize; z++)
         {
-            for (int x = 0; x <= resolution; x++, v++)
+            for (int x = 0; x <= xSize; x++, v++)
             {
                 vertices[v] = new Vector3(x * stepSize - 0.5f, 0f, z * stepSize - 0.5f);
                 colors[v] = Color.black;
@@ -120,17 +132,17 @@ public class TerrainGenerator : MonoBehaviour
         mesh.normals = normals;
         mesh.uv = uv;
 
-        int[] triangles = new int[resolution * resolution * 6];
-        for (int t = 0, v = 0, y = 0; y < resolution; y++, v++)
+        int[] triangles = new int[xSize * zSize * 6];
+        for (int t = 0, v = 0, z = 0; z < zSize; z++, v++)
         {
-            for (int x = 0; x < resolution; x++, v++, t += 6)
+            for (int x = 0; x < xSize; x++, v++, t += 6)
             {
                 triangles[t] = v;
-                triangles[t + 1] = v + resolution + 1;
+                triangles[t + 1] = v + xSize + 1;
                 triangles[t + 2] = v + 1;
                 triangles[t + 3] = v + 1;
-                triangles[t + 4] = v + resolution + 1;
-                triangles[t + 5] = v + resolution + 2;
+                triangles[t + 4] = v + xSize + 1;
+                triangles[t + 5] = v + xSize + 2;
             }
         }
         mesh.triangles = triangles;
