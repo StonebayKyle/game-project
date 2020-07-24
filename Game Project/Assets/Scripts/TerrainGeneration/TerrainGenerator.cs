@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Assertions;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class TerrainGenerator : MonoBehaviour
@@ -6,6 +7,10 @@ public class TerrainGenerator : MonoBehaviour
     public float stepSize;
 
     public int xSize, zSize;
+
+    [ReadOnly]
+    [SerializeField]
+    private int vertexCount; // This number cannot go above 65535 or else Unity does unpredictable mesh splitting
 
     public Vector3 offset;
     public Vector3 rotation;
@@ -110,12 +115,15 @@ public class TerrainGenerator : MonoBehaviour
         currentXSize = xSize;
         currentZSize = zSize;
 
+        UpdateReadOnlyValues();
+
         mesh.Clear();
 
-        vertices = new Vector3[(xSize + 1) * (zSize + 1)];
+        vertices = new Vector3[vertexCount];
         colors = new Color[vertices.Length];
         normals = new Vector3[vertices.Length];
         Vector2[] uv = new Vector2[vertices.Length];
+
 
         for (int v = 0, z = 0; z <= zSize; z++)
         {
@@ -154,4 +162,13 @@ public class TerrainGenerator : MonoBehaviour
         offset.x = Random.Range(-range, range);
         offset.y = Random.Range(-range, range);
     }
+
+    //--- INSPECTOR ---//
+
+    public void UpdateReadOnlyValues()
+    {
+        vertexCount = (xSize + 1) * (zSize + 1);
+        Assert.IsTrue(vertexCount > 0 && vertexCount <= 65535, "vertexCount not in range!");
+    }
+
 }

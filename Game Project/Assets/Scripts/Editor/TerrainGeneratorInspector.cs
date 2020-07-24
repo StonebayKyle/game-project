@@ -25,6 +25,8 @@ public class TerrainGeneratorInspector : Editor
         {
             generator.Refresh();
         }
+
+        generator.UpdateReadOnlyValues();
     }
 
     public override void OnInspectorGUI()
