@@ -153,14 +153,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a0e219db8d0c4a4584b4dbf91172e1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stepSize: 0.1
-  xSize: 20
-  zSize: 20
+  stepSize: 0.01
+  xSize: 100
+  zSize: 100
   offset: {x: 1, y: 2, z: 3}
   rotation: {x: 45, y: 45, z: 0}
   strength: 1
   damping: 0
-  frequency: 3
+  frequency: 1
   octaves: 5
   lacunarity: 2
   persistence: 0.5
