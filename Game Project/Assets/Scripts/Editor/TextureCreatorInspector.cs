@@ -34,5 +34,21 @@ public class TextureCreatorInspector : Editor
         {
             RefreshCreator();
         }
+
+        if (GUILayout.Button("Randomize Offsets"))
+        {
+            Undo.RecordObject(creator, "Randomize Offsets");
+            creator.RandomizeOffsets();
+            EditorUtility.SetDirty(creator);
+            RefreshCreator();
+        }
+
+        if (GUILayout.Button("Randomize Rotation"))
+        {
+            Undo.RecordObject(creator, "Randomize Rotation");
+            creator.RandomizeRotation();
+            EditorUtility.SetDirty(creator);
+            RefreshCreator();
+        }
     }
 }

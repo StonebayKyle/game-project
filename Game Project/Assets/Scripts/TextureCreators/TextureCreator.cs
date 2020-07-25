@@ -88,4 +88,23 @@ public abstract class TextureCreator : MonoBehaviour {
 		}
 		texture.Apply();
 	}
+
+
+	// ---INSPECTOR--- //
+
+	public void RandomizeOffsets()
+    {
+		int range = 25000; // beyond this range, noise gets jagged
+		offset.x = Random.Range(-range, range);
+		offset.y = Random.Range(-range, range);
+		offset.z = Random.Range(-range, range);
+	}
+
+	public void RandomizeRotation()
+    {
+		float range = 360; // 360 degrees
+		rotation.x = Random.Range(0f, range);
+		rotation.y = Random.Range(0f, range);
+		rotation.z = Random.Range(0f, range);
+	}
 }
