@@ -512,10 +512,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 256
-  frequency: 5
-  octaves: 2
-  lacunarity: 1
-  persistence: 0.5
+  frequency: 10
+  octaves: 3
+  lacunarity: 3
+  persistence: 0.2
   dimensions: 3
   type: 1
   coloring:

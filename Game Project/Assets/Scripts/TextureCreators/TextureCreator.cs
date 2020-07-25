@@ -6,6 +6,9 @@ public abstract class TextureCreator : MonoBehaviour {
 	[Range(2, 512)]
 	public int resolution = 256;
 
+	public Vector3 offset;
+	public Vector3 rotation;
+
 	public float frequency = 1f;
 
 	[Range(1, 8)]
@@ -61,12 +64,13 @@ public abstract class TextureCreator : MonoBehaviour {
 		if (texture.width != resolution) {
 			texture.Resize(resolution, resolution);
 		}
-		
-		// TODO: Make noise not dependant on transform location
-		Vector3 point00 = transform.TransformPoint(new Vector3(-0.5f,-0.5f));
-		Vector3 point10 = transform.TransformPoint(new Vector3( 0.5f,-0.5f));
-		Vector3 point01 = transform.TransformPoint(new Vector3(-0.5f, 0.5f));
-		Vector3 point11 = transform.TransformPoint(new Vector3( 0.5f, 0.5f));
+
+		Quaternion q = Quaternion.Euler(rotation);
+
+		Vector3 point00 = q * new Vector3(-0.5f,-0.5f) + offset;
+		Vector3 point10 = q * new Vector3( 0.5f,-0.5f) + offset;
+		Vector3 point01 = q * new Vector3(-0.5f, 0.5f) + offset;
+		Vector3 point11 = q * new Vector3( 0.5f, 0.5f) + offset;
 
 		NoiseMethod method = Noise.methods[(int)type][dimensions - 1];
 		float stepSize = 1f / resolution;
