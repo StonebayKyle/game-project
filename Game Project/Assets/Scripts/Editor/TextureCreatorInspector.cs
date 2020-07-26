@@ -22,7 +22,7 @@ public class TextureCreatorInspector : Editor
     {
         if (Application.isPlaying)
         {
-            creator.FillTexture();
+            creator.Refresh();
         }
     }
 

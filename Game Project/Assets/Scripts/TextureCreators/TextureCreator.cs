@@ -1,7 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using System.Security.Cryptography;
+using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
-public abstract class TextureCreator : MonoBehaviour {
+public abstract class TextureCreator : MonoBehaviour
+{
+
+	[Header("Noise")]
 
 	[Range(2, 512)]
 	public int resolution = 256;
@@ -25,12 +32,26 @@ public abstract class TextureCreator : MonoBehaviour {
 
 	public NoiseMethodType type;
 
+	[Header("Scroll")]
+	[SerializeField]
+	private bool scroll = false;
+	[SerializeField]
+	private Vector3 scrollOffset;
+	[SerializeField]
+	private Vector3 scrollRotation;
+
+	private static int OFFSET_RANGE = 25000; // beyond this range, noise gets jagged
+	private static int ROTATION_RANGE = 360; // 360 degrees
+
+	[Header("Coloring")]
+
 	public Gradient coloring;
 
 	[System.NonSerialized]
 	public Texture2D texture;
 	
-	private void OnEnable () {
+	private void OnEnable () 
+	{
 		if (texture == null)
 		{
 			texture = new Texture2D(resolution, resolution, TextureFormat.RGB24, true);
@@ -42,7 +63,7 @@ public abstract class TextureCreator : MonoBehaviour {
 			AttachTextureToComponents();
 		}
 
-		FillTexture();
+		Refresh();
 	}
 
 	/// <summary>
@@ -53,15 +74,23 @@ public abstract class TextureCreator : MonoBehaviour {
 	/// </summary>
 	public abstract void AttachTextureToComponents();
 
-	private void Update () {
-		if (transform.hasChanged) {
-			transform.hasChanged = false;
-			FillTexture();
-		}
+	public void Refresh()
+    {
+		FillTexture();
 	}
-	
-	public void FillTexture () {
-		if (texture.width != resolution) {
+
+    public void Update()
+    {
+		if (scroll)
+        {
+			Scroll();
+        }
+    }
+
+    private void FillTexture ()
+	{
+		if (texture.width != resolution)
+		{
 			texture.Resize(resolution, resolution);
 		}
 
@@ -74,13 +103,16 @@ public abstract class TextureCreator : MonoBehaviour {
 
 		NoiseMethod method = Noise.methods[(int)type][dimensions - 1];
 		float stepSize = 1f / resolution;
-		for (int y = 0; y < resolution; y++) {
+		for (int y = 0; y < resolution; y++)
+		{
 			Vector3 point0 = Vector3.Lerp(point00, point01, (y + 0.5f) * stepSize);
 			Vector3 point1 = Vector3.Lerp(point10, point11, (y + 0.5f) * stepSize);
-			for (int x = 0; x < resolution; x++) {
+			for (int x = 0; x < resolution; x++)
+			{
 				Vector3 point = Vector3.Lerp(point0, point1, (x + 0.5f) * stepSize);
 				float sample = Noise.Sum(method, point, frequency, octaves, lacunarity, persistence);
-				if (type != NoiseMethodType.Value) {
+				if (type != NoiseMethodType.Value)
+				{
 					sample = sample * 0.5f + 0.5f;
 				}
 				texture.SetPixel(x, y, coloring.Evaluate(sample));
@@ -89,22 +121,53 @@ public abstract class TextureCreator : MonoBehaviour {
 		texture.Apply();
 	}
 
+	private void Scroll()
+    {
+
+		offset += scrollOffset * Time.deltaTime;
+		rotation += scrollRotation * Time.deltaTime;
+
+		WrapNoise();
+
+		Refresh();
+    }
+
+	private void WrapNoise()
+    {
+		// loops through xyz in the offset and rotation vector3's
+		for (int i = 0; i < 3; i++)
+        {
+			if (offset[i] > OFFSET_RANGE)
+            {
+				offset[i] = -OFFSET_RANGE;
+            } else if (offset[i] < -OFFSET_RANGE)
+            {
+				offset[i] = OFFSET_RANGE;
+            }
+
+			if (Math.Abs(rotation[i]) > ROTATION_RANGE)
+            {
+				rotation[i] = 0;
+            }
+        }
+    }
+
 
 	// ---INSPECTOR--- //
 
 	public void RandomizeOffsets()
     {
-		int range = 25000; // beyond this range, noise gets jagged
-		offset.x = Random.Range(-range, range);
-		offset.y = Random.Range(-range, range);
-		offset.z = Random.Range(-range, range);
+		offset.x = Random.Range(-OFFSET_RANGE, OFFSET_RANGE);
+		offset.y = Random.Range(-OFFSET_RANGE, OFFSET_RANGE);
+		offset.z = Random.Range(-OFFSET_RANGE, OFFSET_RANGE);
 	}
 
 	public void RandomizeRotation()
     {
-		float range = 360; // 360 degrees
-		rotation.x = Random.Range(0f, range);
-		rotation.y = Random.Range(0f, range);
-		rotation.z = Random.Range(0f, range);
+		rotation.x = Random.Range(0f, ROTATION_RANGE);
+		rotation.y = Random.Range(0f, ROTATION_RANGE);
+		rotation.z = Random.Range(0f, ROTATION_RANGE);
 	}
+
+
 }
