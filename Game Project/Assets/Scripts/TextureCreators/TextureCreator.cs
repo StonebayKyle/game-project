@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Security.Cryptography;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -45,7 +46,14 @@ public abstract class TextureCreator : MonoBehaviour
 
 	[Header("Coloring")]
 
-	public Gradient coloring;
+	public Gradient gradient;
+
+	private GradientGenerator gradientGenerator;
+
+	public bool lerpGradient = false;
+	public float gradientStepSize = .1f;
+
+	private Gradient nextGradient;
 
 	[System.NonSerialized]
 	public Texture2D texture;
@@ -63,6 +71,12 @@ public abstract class TextureCreator : MonoBehaviour
 			AttachTextureToComponents();
 		}
 
+		if (gameObject.GetComponent(typeof(GradientGenerator)))
+        {
+			gradientGenerator = GetComponent<GradientGenerator>();
+			MakeGradient();
+        }
+
 		Refresh();
 	}
 
@@ -74,17 +88,49 @@ public abstract class TextureCreator : MonoBehaviour
 	/// </summary>
 	public abstract void AttachTextureToComponents();
 
+
 	public void Refresh()
     {
 		FillTexture();
 	}
 
+	public void MakeGradient()
+    {
+		gradient = gradientGenerator.RandomGradient();
+		if (lerpGradient && nextGradient == null)
+        {
+			nextGradient = gradientGenerator.RandomGradient();
+        }
+    }
+
     public void Update()
     {
+		if (lerpGradient)
+        {
+			LerpGradient();
+        }
+
 		if (scroll)
         {
 			Scroll();
         }
+
+    }
+
+	private void LerpGradient()
+    {
+
+    }
+
+	private void Scroll()
+    {
+
+		offset += scrollOffset * Time.deltaTime;
+		rotation += scrollRotation * Time.deltaTime;
+
+		WrapNoise();
+
+		Refresh();
     }
 
     private void FillTexture ()
@@ -115,22 +161,12 @@ public abstract class TextureCreator : MonoBehaviour
 				{
 					sample = sample * 0.5f + 0.5f;
 				}
-				texture.SetPixel(x, y, coloring.Evaluate(sample));
+				texture.SetPixel(x, y, gradient.Evaluate(sample));
 			}
 		}
 		texture.Apply();
 	}
 
-	private void Scroll()
-    {
-
-		offset += scrollOffset * Time.deltaTime;
-		rotation += scrollRotation * Time.deltaTime;
-
-		WrapNoise();
-
-		Refresh();
-    }
 
 	private void WrapNoise()
     {
