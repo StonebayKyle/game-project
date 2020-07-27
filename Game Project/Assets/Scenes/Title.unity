@@ -522,7 +522,7 @@ MonoBehaviour:
   dimensions: 3
   type: 1
   scroll: 0
-  scrollOffset: {x: 0.01, y: 0.01, z: 0.01}
+  scrollOffset: {x: 0, y: 0, z: 0.01}
   scrollRotation: {x: 0.1, y: 0.1, z: 0.1}
   gradient:
     serializedVersion: 2
