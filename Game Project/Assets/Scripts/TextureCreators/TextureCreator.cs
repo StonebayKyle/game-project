@@ -14,7 +14,9 @@ public abstract class TextureCreator : MonoBehaviour
 	[Range(2, 512)]
 	public int resolution = 256;
 
+	public bool randStartingOffset = false;
 	public Vector3 offset;
+	public bool randStartingRotation = false;
 	public Vector3 rotation;
 
 	public float frequency = 1f;
@@ -80,6 +82,15 @@ public abstract class TextureCreator : MonoBehaviour
         {
 			gradientGenerator = GetComponent<GradientGenerator>();
 			MakeGradient();
+        }
+
+		if (randStartingOffset)
+        {
+			RandomizeOffsets();
+        }
+		if (randStartingRotation)
+        {
+			RandomizeRotation();
         }
 
 		Refresh();

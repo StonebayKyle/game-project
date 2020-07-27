@@ -513,7 +513,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resolution: 256
+  randStartingOffset: 1
   offset: {x: 0, y: 0, z: 0}
+  randStartingRotation: 1
   rotation: {x: 0, y: 0, z: 0}
   frequency: 10
   octaves: 3
