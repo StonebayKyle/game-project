@@ -51,9 +51,14 @@ public abstract class TextureCreator : MonoBehaviour
 	private GradientGenerator gradientGenerator;
 
 	public bool lerpGradient = false;
-	public float gradientStepSize = .1f;
+	[Range(0, 1)]
+	public float gradientStepSize = .01f;
+	[ReadOnly]
+	[SerializeField]
+	private float gradientLerpTime = 0f;
 
 	private Gradient nextGradient;
+	private Gradient startGradient;
 
 	[System.NonSerialized]
 	public Texture2D texture;
@@ -94,13 +99,9 @@ public abstract class TextureCreator : MonoBehaviour
 		FillTexture();
 	}
 
-	public void MakeGradient()
+	private void MakeGradient()
     {
 		gradient = gradientGenerator.RandomGradient();
-		if (lerpGradient && nextGradient == null)
-        {
-			nextGradient = gradientGenerator.RandomGradient();
-        }
     }
 
     public void Update()
@@ -115,11 +116,37 @@ public abstract class TextureCreator : MonoBehaviour
 			Scroll();
         }
 
+		if (scroll || lerpGradient) // refresh any visual update
+        {
+			Refresh();
+		}
+
     }
 
 	private void LerpGradient()
     {
+		if (startGradient == null)
+        {
+			startGradient = gradient;
+        }
 
+		if (nextGradient == null)
+		{
+			nextGradient = gradientGenerator.RandomGradient();
+		}
+
+		gradient = Util.Gradient.Lerp(startGradient, nextGradient, gradientLerpTime);
+
+		gradientLerpTime += gradientStepSize * Time.deltaTime;
+
+		// reset lerp and start towards new gradient
+		if (gradientLerpTime >= 1f)
+        {
+			gradientLerpTime = 0f;
+
+			startGradient = nextGradient;
+			nextGradient = gradientGenerator.RandomGradient();
+        }
     }
 
 	private void Scroll()
@@ -129,8 +156,6 @@ public abstract class TextureCreator : MonoBehaviour
 		rotation += scrollRotation * Time.deltaTime;
 
 		WrapNoise();
-
-		Refresh();
     }
 
     private void FillTexture ()

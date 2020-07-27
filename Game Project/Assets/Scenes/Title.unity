@@ -554,7 +554,8 @@ MonoBehaviour:
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
   lerpGradient: 0
-  gradientStepSize: 0
+  gradientStepSize: 0.03
+  gradientLerpTime: 0
 --- !u!114 &2126855032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -602,11 +603,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mode: 0
-  greyscale: 1
+  grayscale: 0
   minColorKeyAmt: 2
   maxColorKeyAmt: 5
-  colorTimeSpacingDeviation: 0.05
+  colorMaxTimeDeviation: 0.05
   noTransparency: 1
   minAlphaKeyAmt: 2
   maxAlphaKeyAmt: 2
-  alphaTimeSpacingDeviation: 0
+  alphaMaxTimeDeviation: 0
