@@ -521,7 +521,7 @@ MonoBehaviour:
   persistence: 0.2
   dimensions: 3
   type: 1
-  scroll: 0
+  scroll: 1
   scrollOffset: {x: 0, y: 0, z: 0.01}
   scrollRotation: {x: 0.1, y: 0.1, z: 0.1}
   gradient:
@@ -553,7 +553,7 @@ MonoBehaviour:
     m_Mode: 0
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  lerpGradient: 0
+  lerpGradient: 1
   gradientStepSize: 0.03
   gradientLerpTime: 0
 --- !u!114 &2126855032
@@ -604,7 +604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mode: 0
   grayscale: 0
-  minColorKeyAmt: 2
+  minColorKeyAmt: 3
   maxColorKeyAmt: 5
   colorMaxTimeDeviation: 0.05
   noTransparency: 1

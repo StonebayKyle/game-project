@@ -11,9 +11,9 @@ public class GradientGenerator : MonoBehaviour
 
     public bool grayscale = false;
 
-    [Range(2, 10)]
+    [Range(2, 8)]
     public int minColorKeyAmt = 2;
-    [Range(2, 10)]
+    [Range(2, 8)]
     public int maxColorKeyAmt = 5;
 
     [Range(0, 1)]
@@ -23,9 +23,9 @@ public class GradientGenerator : MonoBehaviour
 
     public bool noTransparency = true;
 
-    [Range(2, 10)]
+    [Range(2, 8)]
     public int minAlphaKeyAmt = 2;
-    [Range(2, 10)]
+    [Range(2, 8)]
     public int maxAlphaKeyAmt = 2;
 
     [Range(0, 1)]
